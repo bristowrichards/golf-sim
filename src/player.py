@@ -10,7 +10,7 @@ import cards
 # choices: 'flip', 
 
 class Player:
-    def __init__(self, name:str, pos:int, strategy:str='basic', 
+    def __init__(self, name:str, pos:int = 0, strategy:str='basic', 
                  risk_penalty:float=0, knowledge_bonus:float=0, 
                  forgetfulness:float=0) -> None:
         self.name = name
@@ -32,6 +32,9 @@ class Player:
 
     def play(self, state) -> str:
         pass
+
+    def _assign_pos(self, pos) -> None:
+        self.pos = pos
 
     def __repr__(self) -> str:
         return f'{self.name} (p{self.pos})'
