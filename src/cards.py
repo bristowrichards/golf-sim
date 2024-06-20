@@ -27,6 +27,9 @@ class Deck:
     Reminder to make repr methods to show cards left
     And another method to extract list/dict at arbitrary time
     (I guess extracting Deck.deck also works. Would copy be an issue?)
+    todo don't give Jokers suits! 
+    todo make option to exclude Jokers!
+    todo set seed?
     '''
     def __init__(self, shuffle=True) -> None:
         self.deck = self.new_deck()
