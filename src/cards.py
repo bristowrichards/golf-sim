@@ -51,6 +51,9 @@ class Tile:
         if echo:
             print(self.card)
 
+    def score(self) -> int:
+        return self.card.score()
+
     def __repr__(self) -> str:
         if self.card is None:
             return 'EMPTY TILE'
@@ -84,7 +87,8 @@ class Hand:
 
     def score(self) -> int:
         # this needs pair logic!
-        score = sum(c.score() for c in self.tiles.card)
+        assert all(t.face_up for t in self.tiles), 'Cannot score with face-down tiles'
+        score = sum(t.score() for t in self.tiles)
         return score
 
     def __repr__(self) -> str:
@@ -110,7 +114,7 @@ class Deck:
         random.shuffle(self.deck)
         self.is_shuffled = True
 
-    def deal(self) -> Card:
+    def deal(self) -> Card: # should this be titled draw?
         return(self.deck.pop(0))
 
     def new_deck(self, jokers:bool=False) -> list[Card]:
@@ -150,7 +154,8 @@ class Discard:
         if len(self.pile) == 0:
             return 'Discard pile empty!'
         else:
-            return (f'Discard Pile ({"not " if not self.replenishable else ""}'+
+            return (f'Discard Pile ({len(self.pile)} cards) '+
+                    f'({"not " if not self.replenishable else ""}'+
                     f'replenishable): {self.pile[-1].__repr__()}') 
 
 def main():
