@@ -1,7 +1,7 @@
 import random
 
 # common definitions
-ranks = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King']
+ranks = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Joker']
 suits = ['Spades', 'Clubs', 'Diamonds', 'Hearts']
 scores = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 10, 10, 0, -5]
 score_dict = dict(zip(ranks, scores))
@@ -52,32 +52,44 @@ class Tile:
             print(self.card)
 
     def __repr__(self) -> str:
-        if self.face_up:
+        if self.card is None:
+            return 'EMPTY TILE'
+        elif self.face_up:
             return self.card.__repr__()
         elif self.known:
             return f'Hidden: {self.card.__repr__()}'
         else:
             return 'XXXXXXXXXXXXX'
 
-# class Hand:
-#     '''
-#     This should allow four Card objects to be given attributes
-#     Like position, flipped/"locked" status, and "known" status
-#     (how players treat difference between known flipped and known
-#     private cards I am not sure)
-#     '''
-#     def __init__(self) -> None:
-#         self.hand = dict(
-#             0 : (None, 'top left'),
-#             1 : 
-#         )
+class Hand:
+    '''
+    This holds a grid of four Tiles, with methods to
+    deal, exchange, and ultimately, score the hand
+    '''
+    def __init__(self) -> None:
+        self.tiles = list(Tile(n) for n in range(4))
 
-#     def append(self, Card) -> None:
-#         pass
+    def append(self, card:Card, deal:bool=True) -> None:
+        # find index of next tile
+        # I'm sure theres a less complex way to do this
+        empty_tiles = list(t for t in self.tiles if t.card is None)
+        next_tile_pos = empty_tiles[0].tile_pos
 
-#     def __repr__(self) -> str:
-#         # should "hide" cards, show flipped state, locked state
-#         pass
+        # set next empty tile card to this card
+        self.tiles[next_tile_pos].place_card(card, deal)
+
+    def peek(self) -> None:
+        self.tiles[0].peek()
+        self.tiles[1].peek()
+
+    def score(self) -> int:
+        # this needs pair logic!
+        score = sum(c.score() for c in self.tiles.card)
+        return score
+
+    def __repr__(self) -> str:
+        # should "hide" cards, show flipped state, locked state
+        return self.tiles.__repr__()
 
 
 class Deck:
@@ -108,7 +120,7 @@ class Deck:
         # not sure if this makes sense separate from init but wanted
         # ability to create it at will somehow, and separate that
         # from act of shuffling
-        d = [Card(rank, suit) for rank in ranks for suit in suits]
+        d = [Card(rank, suit) for rank in ranks[:-1] for suit in suits]
         if jokers:
             d.append(Card('Joker', 'Black'))
             d.append(Card('Joker', 'Red'))
@@ -122,15 +134,7 @@ class Deck:
         return f'A deck of {len(self.deck)} card(s)'
 
 def main():
-    mydeck = Deck(shuffle=False, jokers=False)
-    mytile = Tile(0)
-    mytile.place_card(mydeck.deal(), deal=True)
-    print('tile at first')
-    print(mytile)
-    mytile.peek()
-    print(mytile)
-    mytile.flip_up()
-    print(mytile)
+    pass
 
 if __name__ == '__main__':
     main()
