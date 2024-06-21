@@ -91,15 +91,12 @@ class Hand:
         # should "hide" cards, show flipped state, locked state
         return self.tiles.__repr__()
 
-
 class Deck:
     '''
     Instantiate a deck with shuffle and deal methods
     Reminder to make repr methods to show cards left
     And another method to extract list/dict at arbitrary time
     (I guess extracting Deck.deck also works. Would copy be an issue?)
-    todo don't give Jokers suits! 
-    todo make option to exclude Jokers!
     todo set seed?
     '''
     def __init__(self, shuffle:bool=True, jokers:bool=False) -> None:
@@ -132,6 +129,29 @@ class Deck:
 
     def __repr__(self) -> str:
         return f'A deck of {len(self.deck)} card(s)'
+    
+class Discard:
+    '''
+    Handle discard pile (mostly handle when flipped exhaused)
+    '''
+    def __init__(self) -> None:
+        self.pile = list()
+        self.replenishable = True
+
+    def stack(self, card:Card) -> None:
+        # the non-replenish action (dealing, replacing)
+        self.pile.append(card)
+
+    def replenish(self, card:Card) -> None:
+        self.pile.append(card)
+        self.replenishable = False
+
+    def __repr__(self) -> str:
+        if len(self.pile) == 0:
+            return 'Discard pile empty!'
+        else:
+            return (f'Discard Pile ({"not " if not self.replenishable else ""}'+
+                    f'replenishable): {self.pile[-1].__repr__()}') 
 
 def main():
     pass
