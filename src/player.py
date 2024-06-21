@@ -1,4 +1,5 @@
 import cards
+import random
 
 # the dimensions of choice seem to be:
 # 1. valuation of unknown cards
@@ -56,9 +57,7 @@ class Player:
         first 8 actions.
         '''
         # at first, player will simply flip each tile sequentially with no strategy
-        print(game) # just to debug
-        self.hand.tiles[game.round].flip_up() # player will flip each round sequentially
-        self.display_hand()
+        self._debug_action(game)
 
     def display_hand(self) -> None:
         print(self._hand_str())
@@ -68,6 +67,32 @@ class Player:
 
     def peek(self) -> None:
         self.hand.peek()
+
+    def _debug_action(self, game) -> None:
+        legal_actions = self._get_legal_actions(game)
+        
+        print(game)
+        print(f'Legal actions: {legal_actions}')
+        choice = random.choice(legal_actions)
+        print(f'Random action selected: {choice}')
+        print(f'(Action taken will be simple flip for now)')
+        self.hand.tiles[game.round].flip_up() # player will flip each round sequentially
+        self.display_hand() # just to debug
+
+    def _get_legal_actions(self, game) -> list:
+        # probably bad naming but starting as bool dict
+        legal_actions = dict((i, False) for i in range(9))
+        for i in range(8):
+            if not self.hand.tiles[i % 4].face_up:
+                legal_actions[i] = True
+        if game.discard.replenishable:
+            legal_actions[8] = True
+        
+        # turn to list of only legal values
+        # extracts keys for key:value pairs where value is true
+        legal_actions = list(k for (k, v) in legal_actions.items() if v)
+
+        return(legal_actions)
 
     def _hand_str(self) -> str:
         return f'{self.__repr__()}\'s hand: {self.hand.__repr__()}'
