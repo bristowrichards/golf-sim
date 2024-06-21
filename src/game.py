@@ -23,18 +23,56 @@ class Game:
             for p in self.players:
                 p.add_to_hand(self.deck.deal())
 
-    def start_game(self) -> None:
+    def setup_game(self) -> None:
         self.deal_hands()
         for p in self.players:
             p.peek()
         self._flip()
     
+    def next_player_go(self) -> None:
+        p = self.players[self.player_turn]
+        p.select_action(self)
+
+    def play(self) -> None:
+        self.setup_game()
+        while self.round < 4:
+            self.next_player_go()
+            self._increment_turn()
+        else:
+            self._end_game()
+        pass
+    
+    def _increment_turn(self) -> None:
+        if self.player_turn == len(self.players) - 1:
+            self.player_turn = 0
+            self.round += 1
+        else:
+            self.player_turn += 1    
+
+    def _action_handler(self, player_action:int) -> None:
+        pass
+
+    def _card_exchange(self, player:player.Player, tile_id:int) -> None:
+        card_to_player = self.discard.pile[-1]
+        card_from_player = player.swap_cards(card_to_player, tile_id) # does swap
+        self.discard.stack(card_from_player)
+
+    def _end_game(self) -> None:
+        print('Game Over')
+        for p in self.players:
+            p.display_hand()
+            p.display_score()
+    
     def _flip(self) -> None:
         self.discard.stack(self.deck.deal())
 
     def __repr__(self) -> str:
-        return (f'Game: round={self.round}, player_turn={self.player_turn} '+
+        game_str = (f'\nGame: round={self.round}, player_turn={self.player_turn} '+
                 f'({self.players[self.player_turn].name}), id={self.id}')
+        discard_str = ''
+        if len(self.discard.pile) > 0:
+            discard_str = f', Discard showing=[{self.discard.pile[-1]}]'
+        return game_str + discard_str
 
 def main():
     pass
