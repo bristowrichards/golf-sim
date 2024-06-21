@@ -15,7 +15,7 @@ class Player:
                  forgetfulness:float=0) -> None:
         self.name = name
         self.pos = pos
-        self.hand = list()
+        self.hand = cards.Hand()
         self.strategy = strategy # encoding strategy
         self.risk_penalty = risk_penalty
         self.knowledge_bonus = knowledge_bonus
@@ -23,18 +23,33 @@ class Player:
     
     def add_to_hand(self, card) -> None:
         assert isinstance(card, cards.Card)
-        assert len(self.hand) < 4
         self.hand.append(card)
 
-    def play_basic(self, state) -> str:
+    def play_basic(self, state) -> int:
         # placeholder for having per-strategy play logic
         pass
 
-    def play(self, state) -> str:
+    def play(self, state) -> int:
+        # I'm thinking that for this, the player will return a value
+        # between 1-9, 1-4 being flip cards 1-4, 5-8 being
+        # exchange discard card for cards 1-4, and 9 being flip new
+        # card onto discard card (if available)
         pass
+
+    def display_hand(self) -> None:
+        print(self._hand_str())
+
+    def peek(self) -> None:
+        self.hand.peek()
+
+    def _hand_str(self) -> str:
+        return f'{self.__repr__()}\'s hand: {self.hand.__repr__()}'
 
     def _assign_pos(self, pos) -> None:
         self.pos = pos
+
+    def _score(self) -> int:
+        return(self.hand.score())
 
     def __repr__(self) -> str:
         return f'{self.name} (p{self.pos})'
