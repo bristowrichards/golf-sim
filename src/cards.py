@@ -104,7 +104,6 @@ class Hand:
                 first_pair_indices = list(
                     i for i, t in enumerate(self.tiles) if t.card.rank == r
                 )[:2] # just get first two indices where this is true
-                print(f'r={r}; tally={tally}, indices={first_pair_indices}')
                 for i in first_pair_indices:
                     self.tiles[i].is_pair = True
 
