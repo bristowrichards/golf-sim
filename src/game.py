@@ -31,7 +31,8 @@ class Game:
     
     def next_player_go(self) -> None:
         p = self.players[self.player_turn]
-        p.select_action(self)
+        action = p.select_action(self)
+        self._action_handler(action)
 
     def play(self) -> None:
         self.setup_game()
@@ -50,7 +51,14 @@ class Game:
             self.player_turn += 1    
 
     def _action_handler(self, player_action:int) -> None:
-        pass
+        p = self.players[self.player_turn]
+        if player_action == 8:
+            self._flip()
+            self.next_player_go() # recursive but 8 won't be legal
+        elif player_action in range(4):
+            p.flip_up(player_action)
+        else:
+            self._card_exchange(p, player_action % 4)
 
     def _card_exchange(self, player:player.Player, tile_id:int) -> None:
         card_to_player = self.discard.pile[-1]
@@ -58,13 +66,16 @@ class Game:
         self.discard.stack(card_from_player)
 
     def _end_game(self) -> None:
-        print('Game Over')
+        print('\n\n-------- Game Over! --------\n\n')
         for p in self.players:
             p.display_hand()
             p.display_score()
     
     def _flip(self) -> None:
         self.discard.stack(self.deck.deal())
+    
+    def _replenish(self) -> None:
+        self.discard.replenish(self.deck.deal())
 
     def __repr__(self) -> str:
         game_str = (f'\nGame: round={self.round}, player_turn={self.player_turn} '+
@@ -75,7 +86,14 @@ class Game:
         return game_str + discard_str
 
 def main():
-    pass
+    p1 = player.Player('Alice')
+    p2 = player.Player('Bob')
+    # p3 = player.Player('Charlie')
+    mygame = Game([p1, p2])
+
+    print(mygame)
+
+    mygame.play()
 
 if __name__ == '__main__':
     main()
