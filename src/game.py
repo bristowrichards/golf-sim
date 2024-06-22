@@ -4,7 +4,7 @@ import cards
 
 class Game:
     # yadda
-    def __init__(self, players:list, id=None) -> None:
+    def __init__(self, players:list, id=None, jokers=False) -> None:
         assert isinstance(players, list)
         for p in enumerate(players):
             assert isinstance(p[1], player.Player)
@@ -12,7 +12,7 @@ class Game:
             p[1]._assign_pos(p[0]) # assign player position from enumerate order
         self.players = players
         self.num_players = len(players) # is this necessary
-        self.deck = cards.Deck()
+        self.deck = cards.Deck(jokers=jokers)
         self.discard = cards.Discard()
         self.round = 0 # round in this context is one loop through players
         self.player_turn = 0 # turn is the individual player's turn
