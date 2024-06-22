@@ -41,8 +41,8 @@ class Player:
         selected_tile = self.hand.tiles[tile_id]
         assert not selected_tile.locked
         outgoing_card = selected_tile.card # temp to not overwrite!
-        selected_tile.card = incoming_card # player gets new card
-        return(outgoing_card) # function returns outgoing card, which game handles
+        selected_tile.place_card(incoming_card) # player gets new card
+        return outgoing_card # function returns outgoing card, which game handles
 
 
     def select_action(self, game) -> int:
@@ -57,7 +57,8 @@ class Player:
         first 8 actions.
         '''
         # at first, player will simply flip each tile sequentially with no strategy
-        self._debug_action(game)
+        action = self._debug_action(game)
+        return action
 
     def display_hand(self) -> None:
         print(self._hand_str())
@@ -68,16 +69,21 @@ class Player:
     def peek(self) -> None:
         self.hand.peek()
 
-    def _debug_action(self, game) -> None:
+    def flip_up(self, tile_id:int) -> None:
+        self.hand.tiles[tile_id].flip_up()
+
+    def _control_action(self, game) -> None:
+        pass
+
+    def _debug_action(self, game) -> int:
         legal_actions = self._get_legal_actions(game)
         
         print(game)
+        self.display_hand()
         print(f'Legal actions: {legal_actions}')
-        choice = random.choice(legal_actions)
-        print(f'Random action selected: {choice}')
-        print(f'(Action taken will be simple flip for now)')
-        self.hand.tiles[game.round].flip_up() # player will flip each round sequentially
-        self.display_hand() # just to debug
+        action = random.choice(legal_actions)
+        print(f'Random action selected: {action}')
+        return action 
 
     def _get_legal_actions(self, game) -> list:
         # probably bad naming but starting as bool dict
@@ -92,7 +98,7 @@ class Player:
         # extracts keys for key:value pairs where value is true
         legal_actions = list(k for (k, v) in legal_actions.items() if v)
 
-        return(legal_actions)
+        return legal_actions
 
     def _hand_str(self) -> str:
         return f'{self.__repr__()}\'s hand: {self.hand.__repr__()}'
@@ -101,7 +107,7 @@ class Player:
         self.pos = pos
 
     def _score(self) -> int:
-        return(self.hand.score())
+        return self.hand.score()
 
     def __repr__(self) -> str:
         return f'{self.name} (p{self.pos})'
