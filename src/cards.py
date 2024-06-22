@@ -35,6 +35,7 @@ class Tile:
         self.known = known
         self.face_up = face_up
         self.locked = locked
+        # self.is_pair = False
 
     def place_card(self, card:Card, deal:bool=False) -> None:
         self.card = card
@@ -53,6 +54,9 @@ class Tile:
 
     def score(self) -> int:
         return self.card.score()
+
+    # def _check_pair(self) -> bool:
+    #     pass
 
     def __repr__(self) -> str:
         if self.card is None:
@@ -145,6 +149,7 @@ class Discard:
     def stack(self, card:Card) -> None:
         # the non-replenish action (dealing, replacing)
         self.pile.append(card)
+        self.replenishable = True
 
     def replenish(self, card:Card) -> None:
         self.pile.append(card)
