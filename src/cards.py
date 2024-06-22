@@ -97,15 +97,18 @@ class Hand:
             rank_count[r] += 1
 
         for r, tally in rank_count.items():
-            while tally > 1:
+            if tally == 4:
+                for t in self.tiles:
+                    t.is_pair = True
+            elif tally > 1:
                 first_pair_indices = list(
-                    i for i, t in enumerate(self.tiles) if t.card.rank == 7
+                    i for i, t in enumerate(self.tiles) if t.card.rank == r
                 )[:2] # just get first two indices where this is true
+                print(f'r={r}; tally={tally}, indices={first_pair_indices}')
                 for i in first_pair_indices:
                     self.tiles[i].is_pair = True
-                tally -= 2
 
-        score = sum(t.score() for t in self.tiles)
+        score = sum(t.score(exp_value=exp_value) for t in self.tiles)
 
         # reset the pair logic 
         for t in self.tiles:
