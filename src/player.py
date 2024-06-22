@@ -56,8 +56,10 @@ class Player:
         the 8 action to be replenish, so that the player can iterate through the
         first 8 actions.
         '''
-        # at first, player will simply flip each tile sequentially with no strategy
-        action = self._debug_action(game)
+        if self.controlled:
+            action = self._control_action(game)
+        else:
+            action = self._debug_action(game)
         return action
 
     def display_hand(self) -> None:
@@ -73,7 +75,12 @@ class Player:
         self.hand.tiles[tile_id].flip_up()
 
     def _control_action(self, game) -> None:
-        pass
+        print(game)
+        self.display_hand()
+        legal_actions = self._get_legal_actions(game)
+        print(f'Legal actions: {legal_actions}')
+        action = int(input('Select action (int): '))
+        return(action)
 
     def _debug_action(self, game) -> int:
         legal_actions = self._get_legal_actions(game)

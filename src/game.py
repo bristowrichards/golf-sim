@@ -53,7 +53,7 @@ class Game:
     def _action_handler(self, player_action:int) -> None:
         p = self.players[self.player_turn]
         if player_action == 8:
-            self._flip()
+            self._replenish()
             self.next_player_go() # recursive but 8 won't be legal
         elif player_action in range(4):
             p.flip_up(player_action)
@@ -87,9 +87,9 @@ class Game:
 
 def main():
     p1 = player.Player('Alice')
-    p2 = player.Player('Bob')
-    # p3 = player.Player('Charlie')
-    mygame = Game([p1, p2])
+    p2 = player.Player('Bristow', controlled=True)
+    p3 = player.Player('Charlie')
+    mygame = Game([p1, p2, p3])
 
     print(mygame)
 
