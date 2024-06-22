@@ -29,13 +29,12 @@ class Tile:
     This handles behavior of a card in front of a player
     '''
     def __init__(self, tile_pos:int, card:Card=None, known:bool=False, 
-                 face_up:bool=False, locked:bool=False) -> None:
+                 face_up:bool=False) -> None:
         self.tile_pos = tile_pos
         self.card = card
         self.known = known
         self.face_up = face_up
-        self.locked = locked
-        # self.is_pair = False
+        self.is_pair = False
 
     def place_card(self, card:Card, deal:bool=False) -> None:
         self.card = card
@@ -45,18 +44,19 @@ class Tile:
     def flip_up(self) -> None:
         self.face_up = True
         self.known = True
-        self.locked = True
 
     def peek(self, echo:bool=False) -> None:
         self.known = True
         if echo:
             print(self.card)
 
-    def score(self) -> int:
-        return self.card.score()
-
-    # def _check_pair(self) -> bool:
-    #     pass
+    def score(self, exp_value:float=0.0) -> int:
+        if not self.face_up:
+            return exp_value
+        elif self.is_pair:
+            return 0
+        else:
+            return self.card.score()
 
     def __repr__(self) -> str:
         if self.card is None:
@@ -89,10 +89,28 @@ class Hand:
         self.tiles[0].peek()
         self.tiles[1].peek()
 
-    def score(self) -> int:
-        # this needs pair logic!
-        assert all(t.face_up for t in self.tiles), 'Cannot score with face-down tiles'
+    def score(self, exp_value:float=5.5) -> int:
+        # count ranks
+        rank_count = {r:0 for r in set(list(t.card.rank for t in self.tiles))}
+        for t in self.tiles:
+            r = t.card.rank
+            rank_count[r] += 1
+
+        for r, tally in rank_count.items():
+            while tally > 1:
+                first_pair_indices = list(
+                    i for i, t in enumerate(self.tiles) if t.card.rank == 7
+                )[:2] # just get first two indices where this is true
+                for i in first_pair_indices:
+                    self.tiles[i].is_pair = True
+                tally -= 2
+
         score = sum(t.score() for t in self.tiles)
+
+        # reset the pair logic 
+        for t in self.tiles:
+            t.is_pair = False
+
         return score
 
     def __repr__(self) -> str:

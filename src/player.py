@@ -39,7 +39,7 @@ class Player:
         handled by the action handler in the Game object
         '''
         selected_tile = self.hand.tiles[tile_id]
-        assert not selected_tile.locked
+        assert not selected_tile.face_up
         outgoing_card = selected_tile.card # temp to not overwrite!
         selected_tile.place_card(incoming_card) # player gets new card
         return outgoing_card # function returns outgoing card, which game handles
