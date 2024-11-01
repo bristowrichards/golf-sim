@@ -44,6 +44,7 @@ class Game:
         pass
     
     def _increment_turn(self) -> None:
+        self.discard.replenishable = True # new player allowed to switch
         if self.player_turn == len(self.players) - 1:
             self.player_turn = 0
             self.round += 1
