@@ -79,7 +79,9 @@ class Player:
         self.display_hand()
         legal_actions = self._get_legal_actions(game)
         print(f'Legal actions: {legal_actions}')
-        action = int(input('Select action (int): '))
+        action = None
+        while action not in legal_actions:
+            action = int(input('Select action (int): '))
         return(action)
 
     def _debug_action(self, game) -> int:
