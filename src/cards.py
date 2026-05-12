@@ -50,8 +50,8 @@ class Tile:
         if echo:
             print(self.card)
 
-    def score(self, exp_value:float=0.0) -> int:
-        if not self.face_up:
+    def score(self, exp_value:float=5.7) -> int:
+        if not self.known:
             return exp_value
         elif self.is_pair:
             return 0
@@ -89,10 +89,13 @@ class Hand:
         self.tiles[0].peek()
         self.tiles[1].peek()
 
-    def score(self, exp_value:float=5.5) -> int:
+    def pair_handler(self) -> None:
         # count ranks
         rank_count = {r:0 for r in set(list(t.card.rank for t in self.tiles))}
         for t in self.tiles:
+            t.is_pair = False
+            if not t.known:
+                continue
             r = t.card.rank
             rank_count[r] += 1
 
@@ -101,19 +104,48 @@ class Hand:
                 for t in self.tiles:
                     t.is_pair = True
             elif tally > 1:
-                first_pair_indices = list(
-                    i for i, t in enumerate(self.tiles) if t.card.rank == r
-                )[:2] # just get first two indices where this is true
-                for i in first_pair_indices:
-                    self.tiles[i].is_pair = True
+                pairs_candidates = list(
+                    [i, t] for i, t in enumerate(self.tiles) if t.card.rank == r and t.known
+                )
+                pairs_candidates.sort( # return face-up first, since they are permenant
+                    key = lambda x: -int(x[1].face_up)
+                )
+                for t in pairs_candidates[:1]: # choose the first two
+                    t[1].is_pair = True
 
+    def score(self, exp_value:float=5.7) -> int:
+        self.pair_handler()
         score = sum(t.score(exp_value=exp_value) for t in self.tiles)
-
-        # reset the pair logic 
-        for t in self.tiles:
-            t.is_pair = False
-
         return score
+    
+    def assess(self, card, exp_value:float=5.7) -> list:
+        new_card_score = card.score()
+        self.pair_handler()
+
+        bogey = None
+        for tile in self.tiles:
+            if tile.known and not tile.is_pair and card.rank == tile.card.rank:
+                new_card_score = -new_card_score
+                bogey = tile.tile_pos + 4 # we penalize failing to get pair
+        
+        # set default options
+        options = { 
+            0: self.tiles[0].score(exp_value), # flip/keep tile 1
+            1: self.tiles[1].score(exp_value), # flip/keep tile 2
+            2: self.tiles[2].score(exp_value), # flip/keep tile 3
+            3: self.tiles[3].score(exp_value), # flip/keep tile 4
+            4: new_card_score, # the value of the new card
+            5: new_card_score, # the value of the new card
+            6: new_card_score, # the value of the new card
+            7: new_card_score, # the value of the new card
+            8: exp_value - 1 # bonus for novel information todo
+        }
+
+        # then we apply the "bogey" penalty for "missing" the pair
+        if isinstance(bogey, int):
+            options[bogey] = -new_card_score # maybe poor form
+        
+        return options
 
     def __repr__(self) -> str:
         # should "hide" cards, show flipped state, locked state

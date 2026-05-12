@@ -79,6 +79,8 @@ class Player:
         self.display_hand()
         legal_actions = self._get_legal_actions(game)
         print(f'Legal actions: {legal_actions}')
+        option_values = self.hand.assess(game.discard.pile[-1])
+        print(option_values)
         action = None
         while action not in legal_actions:
             action = int(input('Select action (int): '))
