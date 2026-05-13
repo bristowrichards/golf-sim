@@ -92,6 +92,9 @@ class Player:
         print(game)
         self.display_hand()
         print(f'Legal actions: {legal_actions}')
+        if 8 in legal_actions:
+            print(f'Discard may be drawn. {self.name} selecting replenish action.')
+            return 8
         action = random.choice(legal_actions)
         print(f'Random action selected: {action}')
         return action 
