@@ -62,9 +62,9 @@ class Tile:
         if self.card is None:
             return 'EMPTY TILE'
         elif self.face_up:
-            return self.card.__repr__()
+            return repr(self.card)
         elif self.known:
-            return f'Hidden: {self.card.__repr__()}'
+            return f'Hidden: {repr(self.card)}'
         else:
             return 'XXXXXXXXXXXXX'
 
@@ -149,7 +149,7 @@ class Hand:
 
     def __repr__(self) -> str:
         # should "hide" cards, show flipped state, locked state
-        return self.tiles.__repr__()
+        return repr(self.tiles)
 
 class Deck:
     '''
@@ -213,7 +213,7 @@ class Discard:
         else:
             return (f'Discard Pile ({len(self.pile)} cards) '+
                     f'({"not " if not self.replenishable else ""}'+
-                    f'replenishable): {self.pile[-1].__repr__()}') 
+                    f'replenishable): {repr(self.pile[-1])}') 
 
 def main():
     pass
