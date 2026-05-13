@@ -110,7 +110,7 @@ class Hand:
                 pairs_candidates.sort( # return face-up first, since they are permenant
                     key = lambda x: -int(x[1].face_up)
                 )
-                for t in pairs_candidates[:1]: # choose the first two
+                for t in pairs_candidates[:2]: # choose the first two
                     t[1].is_pair = True
 
     def score(self, exp_value:float=5.7) -> int:
