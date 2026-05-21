@@ -165,6 +165,7 @@ class Deck:
         if shuffle:
             self.shuffle()
             self.is_shuffled = True
+        self.expected_value = self._calculate_expected_value()
 
     def shuffle(self) -> None:
         random.shuffle(self.deck)
@@ -186,6 +187,10 @@ class Deck:
     def reset(self) -> None:
         self.new_deck()
         self.shuffle()
+
+    def _calculate_expected_value(self) -> float:
+        ev = sum([c.score() for c in self.deck]) / len(self.deck)
+        return ev
 
     def __repr__(self) -> str:
         return f'A deck of {len(self.deck)} card(s)'
