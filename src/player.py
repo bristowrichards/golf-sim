@@ -65,8 +65,8 @@ class Player:
     def display_hand(self) -> None:
         print(self._hand_str())
 
-    def display_score(self) -> None:
-        print(f'{self.__repr__()}\'s score: {self._score()}')
+    def display_score(self, exp_value) -> None:
+        print(f'{self.__repr__()}\'s score: {self._score(exp_value=exp_value)}')
 
     def peek(self) -> None:
         self.hand.peek()
@@ -79,7 +79,7 @@ class Player:
         self.display_hand()
         legal_actions = self._get_legal_actions(game)
         print(f'Legal actions: {legal_actions}')
-        option_values = self.hand.assess(game.discard.pile[-1])
+        option_values = self.hand.assess(game.discard.pile[-1], exp_value=game.deck.expected_value)
         # print(option_values)
         action = None
         while action not in legal_actions:
@@ -120,8 +120,8 @@ class Player:
     def _assign_pos(self, pos) -> None:
         self.pos = pos
 
-    def _score(self) -> int:
-        return self.hand.score()
+    def _score(self, exp_value) -> int:
+        return self.hand.score(exp_value=exp_value)
 
     def __repr__(self) -> str:
         return f'{self.name} (p{self.pos})'

@@ -113,12 +113,12 @@ class Hand:
                 for t in pairs_candidates[:2]: # choose the first two
                     t[1].is_pair = True
 
-    def score(self, exp_value:float=5.7) -> int:
+    def score(self, exp_value) -> int:
         self.pair_handler()
         score = sum(t.score(exp_value=exp_value) for t in self.tiles)
         return score
     
-    def assess(self, card, exp_value:float=5.7) -> list:
+    def assess(self, card, exp_value) -> list:
         new_card_score = card.score()
         self.pair_handler()
 

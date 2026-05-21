@@ -70,7 +70,7 @@ class Game:
         print('\n\n-------- Game Over! --------\n\n')
         for p in self.players:
             p.display_hand()
-            p.display_score()
+            p.display_score(exp_value=self.deck.expected_value)
     
     def _flip(self) -> None:
         self.discard.stack(self.deck.deal())
