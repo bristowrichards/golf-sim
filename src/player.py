@@ -96,11 +96,17 @@ class Player:
         print(game)
         self.display_hand()
         print(f'Legal actions: {legal_actions}')
-        if 8 in legal_actions:
-            print(f'Discard may be drawn. {self.name} selecting replenish action.')
-            return 8
-        action = random.choice(legal_actions)
-        print(f'Random action selected: {action}')
+        option_values = self.hand.assess(
+            card=game.discard.pile[-1],
+            exp_value=game.deck.expected_value,
+            legal_actions=legal_actions
+        )
+        print(option_values)
+        action = min(option_values, key=option_values.get)
+        print(f'Best action: {action}')
+        if self.name == 'Charlie':
+            action = random.choice(legal_actions)
+            print(f'Charlie choosing random action: {action}')
         return action 
 
     def _get_legal_actions(self, game) -> list:
