@@ -1,4 +1,5 @@
 import random
+from copy import deepcopy
 
 # common definitions
 ranks = ['Ace', 2, 3, 4, 5, 6, 7, 8, 9, 10, 'Jack', 'Queen', 'King', 'Joker']
@@ -118,32 +119,33 @@ class Hand:
         score = sum(t.score(exp_value=exp_value) for t in self.tiles)
         return score
     
-    def assess(self, card, exp_value) -> list:
+    def assess(self, card, exp_value, legal_actions) -> dict:
         new_card_score = card.score()
         self.pair_handler()
 
-        bogey = None
-        for tile in self.tiles:
-            if tile.known and not tile.is_pair and card.rank == tile.card.rank:
-                new_card_score = -new_card_score
-                bogey = tile.tile_pos + 4 # we penalize failing to get pair
-        
-        # set default options
-        options = { 
-            0: self.tiles[0].score(exp_value), # flip/keep tile 1
-            1: self.tiles[1].score(exp_value), # flip/keep tile 2
-            2: self.tiles[2].score(exp_value), # flip/keep tile 3
-            3: self.tiles[3].score(exp_value), # flip/keep tile 4
-            4: new_card_score, # the value of the new card
-            5: new_card_score, # the value of the new card
-            6: new_card_score, # the value of the new card
-            7: new_card_score, # the value of the new card
-            8: exp_value - 1 # bonus for novel information todo
-        }
+        hand_score_imputed = self.score(exp_value=exp_value)
 
-        # then we apply the "bogey" penalty for "missing" the pair
-        if isinstance(bogey, int):
-            options[bogey] = -new_card_score # maybe poor form
+        # set default options
+        options = {i: hand_score_imputed for i in range(4)}
+
+        # if hand is best, slightly prefer lowest known card
+        for i in range(4):
+            options[i] -= -.1 * self.tiles[i].score()
+
+        # imagine known or unknown card replaced with draw pile
+        # coupled with player swap method, which is a smell
+        # limit to legal options 4-7
+        for i in [j for j in range(4) if j+4 in legal_actions]:
+            fake_hand = deepcopy(self)
+            assert not fake_hand.tiles[i].face_up
+            fake_hand.tiles[i].place_card(card)
+            fake_hand.pair_handler()
+            options[i+4] = fake_hand.score(exp_value=exp_value)
+
+        # encourage exploration, a bit
+        options[8] = hand_score_imputed - 1
+
+        options = {k: round(v, 2) for k, v in options.items() if k in legal_actions}
         
         return options
 
